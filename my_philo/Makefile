@@ -1,16 +1,9 @@
 NAME = philo
-
 CC = gcc
+CFLAGS = -Wall -Werror -Wextra -g -Iincludes -Ilibft/inc
 
-CFLAGS = -Wall -Werror -Wextra -g $(INCLUDES)
-
-Y = "\033[33m"
-R = "\033[31m"
-G = "\033[32m"
-B = "\033[34m"
-X = "\033[0m"
-UP = "\033[A"
-CUT = "\033[K"
+LIBFT_PATH = libft
+LIBFT_LIB = -L$(LIBFT_PATH) -lft
 
 CFILES = src/main.c \
          utils/init.c \
@@ -18,55 +11,31 @@ CFILES = src/main.c \
          utils/threads.c \
          utils/actions.c
 
-
 OBJECTS = $(CFILES:.c=.o)
-INCLUDES = -Iinc
-LIBFT_PATH = libft
-LIBFT_LIB = -L$(LIBFT_PATH) -lft
+
+all: libraries $(NAME)
 
 libraries:
 	@$(MAKE) -C $(LIBFT_PATH)
 
-
-all: libraries $(NAME)
-
-%.o : %.c
-	@echo $(Y)Compiling [$<]...$(X)
-	@$(CC) $(CFLAGS) -c -o $@ $<
-	@printf $(UP)$(CUT)
-
-libraries:
-	@echo $(B)
-	make -C $(LIBFT_PATH) all
-	@echo $(B)
-	make -C $(PRINTF_PATH) all
-
 $(NAME): $(OBJECTS)
-	@echo $(Y)Compiling [$(CFILES)]...$(X)
-	@echo $(G)Finished [$(CFILES)]$(X)
-	@echo
-	@echo $(Y)Compiling [$(NAME)]...$(X)
 	@$(CC) $(CFLAGS) $(OBJECTS) $(LIBFT_LIB) -o $(NAME)
-	@echo $(G)Finished [$(NAME)]$(X)
+	@echo "Compilation réussie : $(NAME)"
+
+%.o: %.c
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@echo "Compilé : $<"
 
 clean:
-	@make -C $(LIBFT_PATH) clean
-	@make -C $(PRINTF_PATH) clean
+	@$(MAKE) -C $(LIBFT_PATH) clean
 	@rm -f $(OBJECTS)
-	@echo $(R)Removed [$(OBJECTS)]$(X)
-	@echo $(R)Removed libraries.o$(X)
+	@echo "Nettoyage terminé."
 
 fclean: clean
-	@make -C $(LIBFT_PATH) fclean
-	@make -C $(PRINTF_PATH) fclean
+	@$(MAKE) -C $(LIBFT_PATH) fclean
 	@rm -f $(NAME)
-	@echo $(R)Removed [$(NAME)]$(X)
+	@echo "Suppression de $(NAME) et des objets."
 
 re: fclean all
 
-norm:
-	norminette ft_printf utils checker
-
-#run:	all
-
-.PHONY: all clean fclean re norm
+.PHONY: all libraries clean fclean re

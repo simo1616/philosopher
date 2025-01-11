@@ -6,34 +6,34 @@
 /*   By: mbendidi <mbendidi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 20:09:14 by mbendidi          #+#    #+#             */
-/*   Updated: 2025/01/10 21:42:51 by mbendidi         ###   ########.fr       */
+/*   Updated: 2025/01/11 10:47:50 by mbendidi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "philo.h"
 
-long	get_timestamp()
+uint64_t	get_time(void)
 {
-	long n;
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	n = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-	return(n);
+	struct timeval	tv;
+
+	if (gettimeofday(&tv, NULL))
+		return (error("gettimeofday() FAILURE\n", NULL));
+	return ((tv.tv_sec * (uint64_t)1000) + (tv.tv_usec / 1000));
 }
 
-long	get_relative_timestamp(long start_time)
+uint64_t	get_relative_timestamp(uint64_t start_time)
 {
-	long	cur_time;
+	uint64_t	cur_time;
 
-	cur_time = get_timestamp();
+	cur_time = get_time();
 	return (cur_time - start_time);
 }
 
-void	display_state(t_data *data, char *state, char *color)
+void	display_state(t_philo *philo, char *state, char *color, int i)
 {
-	long time;
+	uint64_t time;
 
-	time = get_relative_timestamp(data->start_time);
-	printf("%.4ld #%d %sis %s%s\n", time, data->id, color, state, "\033[0m");
+	time = get_relative_timestamp(philo->start_time);
+	printf("%04li #%d %sis %s%s\n", time, philo[i].id, color, state, "\033[0m");
 
 }

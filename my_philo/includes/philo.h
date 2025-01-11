@@ -6,7 +6,7 @@
 /*   By: mbendidi <mbendidi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:12:13 by mbendidi          #+#    #+#             */
-/*   Updated: 2025/01/11 11:04:25 by mbendidi         ###   ########.fr       */
+/*   Updated: 2025/01/11 19:10:53 by mbendidi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,7 @@
 # define EATING "is eating"
 # define DIED "died"
 
-typedef struct s_philo
-{
-	int			id;
-	pthread_t	thread;
-} t_philo;
+
 
 typedef struct s_data
 {
@@ -43,14 +39,26 @@ typedef struct s_data
 	int			nb_philo;
 	int			nb_eat;
 	uint64_t	start_time;
+	pthread_mutex_t	print_mutex;
+	//t_philo		*philo;
 } t_data;
+
+typedef struct s_philo
+{
+	int			id;
+	pthread_t	thread;
+	int			meals_eaten;
+	t_data		*data;
+} t_philo;
 
 uint64_t	get_time(void);
 uint64_t	get_relative_timestamp(uint64_t start_time);
-void 	display_state(t_philo *philo, char *state, char *color, int i, uint64_t start_time);
-int 	error(char *str, t_data *data);
-void	ft_exit(t_data *data);
-void	init_data(t_data *data, char **av);
-void	init_philo(t_philo *philo, char **av);
+void		display_state(t_philo *philo, char *state, char *color, uint64_t start_time);
+int			error(char *str, t_data *data);
+void		ft_exit(t_data *data);
+void		init_data(t_data *data, char **av);
+void 		init_philo(t_philo *philo, t_data *data);
+int 		ft_thread(t_philo *philo, t_data *data, int ac);
+void 		*philo_routine(void *arg);
 
 #endif

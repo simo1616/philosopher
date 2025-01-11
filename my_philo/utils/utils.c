@@ -6,7 +6,7 @@
 /*   By: mbendidi <mbendidi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 20:09:14 by mbendidi          #+#    #+#             */
-/*   Updated: 2025/01/11 10:47:50 by mbendidi         ###   ########.fr       */
+/*   Updated: 2025/01/11 11:14:17 by mbendidi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,10 @@ uint64_t	get_relative_timestamp(uint64_t start_time)
 	return (cur_time - start_time);
 }
 
-void	display_state(t_philo *philo, char *state, char *color, int i)
+void	display_state(t_philo *philo, char *state, char *color, int i, uint64_t start_time)
 {
 	uint64_t time;
 
-	time = get_relative_timestamp(philo->start_time);
-	printf("%04li #%d %sis %s%s\n", time, philo[i].id, color, state, "\033[0m");
-
+	time = get_relative_timestamp(start_time);
+	printf("%04lu #%d %sis %s%s\n", time, philo[i].id, color, state, "\033[0m");
 }

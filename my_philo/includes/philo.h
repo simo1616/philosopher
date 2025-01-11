@@ -6,7 +6,7 @@
 /*   By: mbendidi <mbendidi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:12:13 by mbendidi          #+#    #+#             */
-/*   Updated: 2025/01/11 10:56:25 by mbendidi         ###   ########.fr       */
+/*   Updated: 2025/01/11 11:04:25 by mbendidi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,23 +31,23 @@
 typedef struct s_philo
 {
 	int			id;
-	uint64_t		start_time;
 	pthread_t	thread;
 } t_philo;
 
 typedef struct s_data
 {
-	int		time_to_think;
-	int		time_to_eat;
-	int		time_to_sleep;
-	int		time_to_die;
-	int		nb_philo;
-	int		nb_eat;
+	int			time_to_think;
+	int			time_to_eat;
+	int			time_to_sleep;
+	int			time_to_die;
+	int			nb_philo;
+	int			nb_eat;
+	uint64_t	start_time;
 } t_data;
 
 uint64_t	get_time(void);
 uint64_t	get_relative_timestamp(uint64_t start_time);
-void	display_state(t_philo *philo, char *state, char *color, int i);
+void 	display_state(t_philo *philo, char *state, char *color, int i, uint64_t start_time);
 int 	error(char *str, t_data *data);
 void	ft_exit(t_data *data);
 void	init_data(t_data *data, char **av);

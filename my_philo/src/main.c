@@ -22,6 +22,7 @@ void init_data(t_data *data, char **av)
     data->time_to_sleep = atoi(av[4]);
 	data->nb_eat = atoi(av[5]);
     data->time_to_think = 0;
+	data->start_time = get_time();
 }
 
 void init_philo(t_philo *philo, char **av)
@@ -39,7 +40,6 @@ void init_philo(t_philo *philo, char **av)
 			while (i < atoi(av[1]))
 			{
 				philo[i].id = i + 1;
-				philo[i].start_time = get_time();
 				i++;
 			}
 			j++;
@@ -51,7 +51,6 @@ void init_philo(t_philo *philo, char **av)
 		while (i < atoi(av[1]))
 		{
 			philo[i].id = i + 1;
-			philo[i].start_time = get_time();
 			i++;
 		}
 	}
@@ -89,12 +88,12 @@ int main(int ac, char **av)
 			while (i < data.nb_philo)
 			{
 				printf("\n-----Philo  #%d------\n", i + 1);
-				display_state(philo, "thinking", "\033[095m", i);
-				usleep(data.time_to_think);
-				display_state(philo, "eating", "\033[032m", i);
-				usleep(data.time_to_eat);
-				display_state(philo, "sleeping", "\033[033m", i);
-				usleep(data.time_to_sleep);
+				display_state(philo, "thinking", "\033[095m", i, data.start_time);
+				usleep(data.time_to_think * 1000);
+				display_state(philo, "eating", "\033[032m", i, data.start_time);
+				usleep(data.time_to_eat * 1000);
+				display_state(philo, "sleeping", "\033[033m", i, data.start_time);
+				usleep(data.time_to_sleep * 1000);
 				i++;
 			}
 			j++;
@@ -105,15 +104,17 @@ int main(int ac, char **av)
 		i = 0;
 		while (i < data.nb_philo)
 		{
-			display_state(philo, "thinking", "\033[095m", i);
-			usleep(data.time_to_think);
-			display_state(philo, "eating", "\033[032m", i);
-			usleep(data.time_to_eat);
-			display_state(philo, "sleeping", "\033[033m", i);
-			usleep(data.time_to_sleep);
+			printf("\n-----Philo  #%d------\n", i + 1);
+			display_state(philo, "thinking", "\033[095m", i, data.start_time);
+			usleep(data.time_to_think * 1000);
+			display_state(philo, "eating", "\033[032m", i, data.start_time);
+			usleep(data.time_to_eat * 1000);
+			display_state(philo, "sleeping", "\033[033m", i, data.start_time);
+			usleep(data.time_to_sleep * 1000);
 			i++;
 		}
 	}
     free(philo);
+	//free(data);
     return (0);
 }

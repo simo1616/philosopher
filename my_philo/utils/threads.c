@@ -2,32 +2,47 @@
 
 void *supervisor_routine(void *arg)
 {
-    t_data *data;
-	int i;
+    t_data *data = (t_data *)arg;
+    int i;
 
-	data = (t_data *)arg;
-    while (1)
+    while (data->simulation_active)
     {
-		i = 0;
-        while (i < data->nb_philo)
+        int all_meals_eaten = 1;
+
+        for (i = 0; i < data->nb_philo; i++)
         {
             t_philo *philo = &data->philo[i];
 
-            if (get_time() - philo->last_meal_time > (uint64_t)data->time_to_die)
+            // Vérifie si un philosophe est mort
+            if (!data->death_reported && get_time() - philo->last_meal_time > (uint64_t)data->time_to_die)
             {
                 pthread_mutex_lock(&data->print_mutex);
                 display_state(philo, DIED, "\033[031m", data->start_time);
+                data->death_reported = 1;
 				data->simulation_active = 0;
                 pthread_mutex_unlock(&data->print_mutex);
-                return NULL; // Arrête la simulation
+                return NULL; // Arrête la supervision immédiatement
             }
-			i++;
+
+            // Vérifie si tous les philosophes ont mangé le nombre requis de repas
+            if (data->nb_eat != -1 && philo->meals_eaten < data->nb_eat)
+            {
+                all_meals_eaten = 0; // Tous les repas ne sont pas encore terminés
+            }
         }
-        usleep(1000);
+
+        // Si tous les philosophes ont fini leurs repas
+        if (all_meals_eaten)
+        {
+            data->simulation_active = 0;
+            return NULL;
+        }
+
+        usleep(1000); // Pause courte pour éviter une surcharge CPU
     }
+
+    return NULL;
 }
-
-
 
 void *philo_routine(void *arg)
 {
@@ -44,21 +59,36 @@ void *philo_routine(void *arg)
 	//printf("left_fork = %d\n", left_fork); // debug
 	right_fork = philo->id % data->nb_philo;
 	//printf("right_fork = %d\n", right_fork); // debug
+	
 	if (left_fork < 0 || left_fork >= data->nb_philo || right_fork < 0 || right_fork >= data->nb_philo)
 	{
 		fprintf(stderr, "Invalid fork index for philosopher %d\n", philo->id);
 		pthread_exit(NULL);
 	}
+	if (data->nb_philo == 1)
+    {
+        usleep(data->time_to_die * 1000); // Attendre jusqu'à ce qu'il meure
+        pthread_mutex_lock(&data->print_mutex);
+        display_state(philo, DIED, "\033[031m", data->start_time);
+        pthread_mutex_unlock(&data->print_mutex);
+        return NULL;
+    }
 	while (data->simulation_active)
 	{
 		//printf("-------philo->id = %d---------\n", philo->id);
 		if (get_time() - philo->last_meal_time > (uint64_t)data->time_to_die)
 		{
 			pthread_mutex_lock(&data->print_mutex);
-			display_state(philo, DIED, "\033[031m", data->start_time);
+			if (!data->death_reported) // Vérifie si la mort a déjà été signalée
+			{
+				display_state(philo, DIED, "\033[031m", data->start_time);
+				data->death_reported = 1;
+				data->simulation_active = 0;
+			}
 			pthread_mutex_unlock(&data->print_mutex);
 			break;
 		}
+
 		if(philo->id % 2 == 0)
 		{
 			pthread_mutex_lock(&data->forks[right_fork]);
@@ -136,6 +166,11 @@ int ft_thread(t_philo *philo, t_data *data, int ac)
             printf("Error creating supervisor thread\n");
             return (0);
         }
+		if(pthread_join(data->supv_thr, NULL) != 0)
+		{
+			fprintf(stderr, "Error joining supervisor thread\n");
+			return (0);
+		}
 		i = 0;
 		while (i < data->nb_philo)
 		{

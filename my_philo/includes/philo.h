@@ -6,7 +6,7 @@
 /*   By: mbendidi <mbendidi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:12:13 by mbendidi          #+#    #+#             */
-/*   Updated: 2025/01/11 21:56:00 by mbendidi         ###   ########.fr       */
+/*   Updated: 2025/01/12 09:38:50 by mbendidi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_data
 	int			nb_philo;
 	int			nb_eat;
 	int 		simulation_active;
+	int			death_reported;
 	uint64_t	start_time;
 	pthread_t	supv_thr;
 	pthread_mutex_t	print_mutex;
